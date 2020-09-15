@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "HAR/JSON viewer",
+  "description": "Visualizes HTTP Archive (HAR) files opened locally or online. Also features JSON tree view for HAR and any structured JSON files.",
+  "version": "1.0.0",
+  "permissions": [
+    "activeTab"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "icons": {
+    "16": "icon-colored-16.png",
+    "32": "icon-colored-32.png",
+    "64": "icon-colored-64.png",
+    "128": "icon-colored-128.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icon-colored-16.png",
+      "32": "icon-colored-32.png"
+    },
+    "default_title": "HAR/JSON viewer"
+  },
+  "web_accessible_resources": [
+    "harviewer/*", "connection.js"
+  ]
+}
