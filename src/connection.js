@@ -37,14 +37,14 @@ const selectTab = (viewer, isHar) => {
 
 const elem = document.getElementById('content');
 if (elem) {
-  elem.addEventListener('onViewerPreInit', event => {
+  elem.addEventListener('onViewerPreInit', () => {
     preinit(elem.repObject);
   });
-  elem.addEventListener('onViewerInit', event => {
+  elem.addEventListener('onViewerInit', () => {
     const value = init(elem.repObject);
     window.postMessage({ id: 'HARVIEWER_TYPE', value }, '*');
   });
-  window.addEventListener('message', function(event) {
+  window.addEventListener('message', event => {
     if (event.source !== window)
       return;
     const { id, value } = event.data;
