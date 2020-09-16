@@ -22,23 +22,24 @@ chrome.runtime.onMessage.addListener( (data, sender) => {
     return;
   const tabId = sender.tab.id;
   type? setBadge(tabId, mode) : offIcon(tabId);
-  busy = false;
 });
 
-let busy = false;
 chrome.browserAction.onClicked.addListener( tab => {
-  if (busy || !tab.id)
+  if (!tab.id)
     return;
-  busy = true;
   const tabId = tab.id;
-  
+  if (!tab.url || !/^(?:file|https?):/.test(tab.url)) {
+    offIcon(tabId);
+    return;
+  }
   chrome.tabs.sendMessage(tabId, {id: 'clickIcon'}, data => {
     if (chrome.runtime.lastError) {
-      chrome.tabs.executeScript({ file: 'content.js' });
+      chrome.tabs.executeScript({ file: 'content.js' }, () => {
+        chrome.runtime.lastError && offIcon(tabId);
+      });
       return;
     }
     const { mode } = data || {};
     setBadge(tabId, mode);
-    busy = false;
   });
 });
