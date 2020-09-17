@@ -1,11 +1,15 @@
-const offIcon = (tabId) => {
+const offIcon = (tabId, reason) => {
   const iconSizes = {
     '16' : 'icon-grayed-16.png',
     '32' : 'icon-grayed-32.png'
   };
-  const title = 'HAR/JSON viewer is inapplicable to this content';
+  const name = 'HAR/JSON viewer';
+  const titles = [
+    `${name} cannot parse this content`,
+    `${name} needs your permission to access local files:\nchrome://extensions -> ${name} -> Details -> Allow access to File URLs`
+  ];
   chrome.browserAction.setIcon({ tabId, path: iconSizes});
-  chrome.browserAction.setTitle({ tabId, title });
+  chrome.browserAction.setTitle({ tabId, title: titles[reason? 1: 0] });
   chrome.browserAction.disable(tabId);
 };
 
@@ -32,14 +36,21 @@ chrome.browserAction.onClicked.addListener( tab => {
     offIcon(tabId);
     return;
   }
-  chrome.tabs.sendMessage(tabId, {id: 'clickIcon'}, data => {
-    if (chrome.runtime.lastError) {
-      chrome.tabs.executeScript({ file: 'content.js' }, () => {
-        chrome.runtime.lastError && offIcon(tabId);
-      });
+  chrome.extension.isAllowedFileSchemeAccess( allowed => {
+    if (!allowed && tab.url.indexOf('file:') === 0) {
+      offIcon(tabId, 1);
       return;
     }
-    const { mode } = data || {};
-    setBadge(tabId, mode);
+    chrome.tabs.sendMessage(tabId, {id: 'clickIcon'}, data => {
+      if (chrome.runtime.lastError) {
+        chrome.tabs.executeScript({ file: 'content.js' }, () => {
+          chrome.runtime.lastError && offIcon(tabId);
+        });
+      }
+      else {
+        const { mode } = data || {};
+        setBadge(tabId, mode);
+      }
+    });
   });
 });

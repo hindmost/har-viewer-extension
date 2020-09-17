@@ -1,6 +1,6 @@
 {
   "name": "har-viewer-chrome-extension",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "files": [
     "dist"
