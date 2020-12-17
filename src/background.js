@@ -6,7 +6,8 @@ const offIcon = (tabId, reason) => {
   const name = 'HAR/JSON viewer';
   const titles = [
     `${name} cannot parse this content`,
-    `${name} needs your permission to access local files:\nchrome://extensions -> ${name} -> Details -> Allow access to File URLs`
+    `${name} needs your permission to access local files:
+chrome://extensions -> ${name} -> Details -> Allow access to File URLs`
   ];
   chrome.browserAction.setIcon({ tabId, path: iconSizes});
   chrome.browserAction.setTitle({ tabId, title: titles[reason? 1: 0] });
@@ -14,8 +15,8 @@ const offIcon = (tabId, reason) => {
 };
 
 const setBadge = (tabId, mode) => {
-  const text = mode? (mode > 1? 'HAR' : 'JSON') : '';
-  chrome.browserAction.setBadgeText({ tabId, text });
+  const badges = ['', process.env.CHROME? 'JSON' : 'json', 'HAR'];
+  chrome.browserAction.setBadgeText({ tabId, text: badges[mode] || '' });
 };
 
 chrome.runtime.onMessage.addListener( (data, sender) => {
@@ -28,6 +29,14 @@ chrome.runtime.onMessage.addListener( (data, sender) => {
   type? setBadge(tabId, mode) : offIcon(tabId);
 });
 
+let filesAllowed = true;
+
+if (process.env.CHROME) {
+  chrome.extension.isAllowedFileSchemeAccess( allowed => {
+    filesAllowed = allowed;
+  });
+}
+
 chrome.browserAction.onClicked.addListener( tab => {
   if (!tab.id)
     return;
@@ -36,21 +45,19 @@ chrome.browserAction.onClicked.addListener( tab => {
     offIcon(tabId);
     return;
   }
-  chrome.extension.isAllowedFileSchemeAccess( allowed => {
-    if (!allowed && tab.url.indexOf('file:') === 0) {
-      offIcon(tabId, 1);
-      return;
+  if (!filesAllowed && tab.url.indexOf('file:') === 0) {
+    offIcon(tabId, 1);
+    return;
+  }
+  chrome.tabs.sendMessage(tabId, {id: 'clickIcon'}, data => {
+    if (chrome.runtime.lastError) {
+      chrome.tabs.executeScript({ file: 'content.js' }, () => {
+        chrome.runtime.lastError && offIcon(tabId);
+      });
     }
-    chrome.tabs.sendMessage(tabId, {id: 'clickIcon'}, data => {
-      if (chrome.runtime.lastError) {
-        chrome.tabs.executeScript({ file: 'content.js' }, () => {
-          chrome.runtime.lastError && offIcon(tabId);
-        });
-      }
-      else {
-        const { mode } = data || {};
-        setBadge(tabId, mode);
-      }
-    });
+    else {
+      const { mode } = data || {};
+      setBadge(tabId, mode);
+    }
   });
 });

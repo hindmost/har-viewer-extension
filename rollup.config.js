@@ -2,7 +2,11 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import buble from '@rollup/plugin-buble';
 import copy from 'rollup-plugin-copy';
+import replace from '@rollup/plugin-replace';
 import { terser } from 'rollup-plugin-terser';
+
+const isChrome = process.env.TARGET_BROWSER === 'chrome';
+const outDir = 'dist/' + (process.env.TARGET_BROWSER || 'chrome');
 
 export default {
   input: {
@@ -11,10 +15,13 @@ export default {
     connection: 'src/connection.js'
   },
   output: {
-    dir: 'dist',
+    dir: outDir,
     format: 'cjs'
   },
   plugins: [
+    replace({
+      'process.env.CHROME': JSON.stringify(isChrome),
+    }),
     resolve(),
     commonjs(),
     buble({
@@ -30,7 +37,18 @@ export default {
     }),
     copy({
       flatten: false,
-      targets: [{ src: 'public/**/*', dest: 'dist' }]
+      targets: [
+        {
+          src: ['public/**/*', '!public/manifest.json' ],
+          dest: outDir
+        },
+        {
+          src: 'public/manifest.json',
+          dest: outDir,
+          transform: contents =>
+            isChrome? contents : contents.toString().replace(/[,]\s*"persistent"\:\s*false/, '')
+        }
+      ]
     })
   ]
 };
