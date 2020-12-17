@@ -33,6 +33,7 @@ const init = () => {
   document.body.appendChild(container);
   addCss( getURL('harviewer/css/harViewer.css') );
   addScript( getURL('harviewer/scripts/jquery.js') );
+  addScript( getURL('harviewer/scripts/highlightjs/highlight.min.js') );
   addScript( getURL('harviewer/scripts/require.js'), script => {
       script.setAttribute(
         'data-main',
