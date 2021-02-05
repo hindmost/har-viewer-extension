@@ -12,7 +12,7 @@ const prevalidate = () => {
 };
 
 const init = () => {
-  const getURL = (url) => chrome.extension.getURL(url);
+  const getURL = (url) => chrome.runtime.getURL(url);
   const addCss = (url) => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';

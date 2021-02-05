@@ -1,3 +1,5 @@
+const actionApi = chrome[process.env.CHROME? 'action' : 'browserAction'];
+
 const offIcon = (tabId, reason) => {
   const iconSizes = {
     '16' : 'icon-grayed-16.png',
@@ -9,14 +11,14 @@ const offIcon = (tabId, reason) => {
     `${name} needs your permission to access local files:
 chrome://extensions -> ${name} -> Details -> Allow access to File URLs`
   ];
-  chrome.browserAction.setIcon({ tabId, path: iconSizes});
-  chrome.browserAction.setTitle({ tabId, title: titles[reason? 1: 0] });
-  chrome.browserAction.disable(tabId);
+  actionApi.setIcon({ tabId, path: iconSizes});
+  actionApi.setTitle({ tabId, title: titles[reason? 1: 0] });
+  actionApi.disable(tabId);
 };
 
 const setBadge = (tabId, mode) => {
   const badges = ['', process.env.CHROME? 'JSON' : 'json', 'HAR'];
-  chrome.browserAction.setBadgeText({ tabId, text: badges[mode] || '' });
+  actionApi.setBadgeText({ tabId, text: badges[mode] || '' });
 };
 
 chrome.runtime.onMessage.addListener( (data, sender) => {
@@ -37,7 +39,7 @@ if (process.env.CHROME) {
   });
 }
 
-chrome.browserAction.onClicked.addListener( tab => {
+actionApi.onClicked.addListener( tab => {
   if (!tab.id)
     return;
   const tabId = tab.id;

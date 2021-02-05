@@ -2,6 +2,8 @@
 
 Source code of HAR/JSON viewer browser extension ([Chrome](https://chrome.google.com/webstore/detail/harjson-viewer/bghceahjdhjncoohgobeohgnmfnooibd?hl=en-US)/[Firefox](https://addons.mozilla.org/addon/har-json-viewer/)/Opera/Edge).
 
+Chrome extension is [Manifest V3](https://developer.chrome.com/docs/extensions/mv3/intro/) now.
+
 Based on [HAR Viewer](https://github.com/janodvarko/harviewer).
 
 
