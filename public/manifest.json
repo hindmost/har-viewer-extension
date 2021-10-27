@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "HAR/JSON viewer",
   "description": "Visualizes HTTP Archive (HAR) files opened locally or online. Also features JSON tree view for HAR and any structured JSON files.",
-  "version": "1.4.0",
+  "version": "1.4.10",
   "permissions": [
     "activeTab"
   ],

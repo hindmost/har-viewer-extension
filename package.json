@@ -1,6 +1,6 @@
 {
   "name": "har-viewer-extension",
-  "version": "1.4.0",
+  "version": "1.4.10",
   "private": true,
   "files": [
     "dist"

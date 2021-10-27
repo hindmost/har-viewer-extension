@@ -39,6 +39,18 @@ if (process.env.CHROME) {
   });
 }
 
+const executeScript = (tabId, file) => {
+  if (process.env.CHROME) {
+    chrome.scripting.executeScript({
+      target: {tabId},
+      files: [file],
+    });  
+  }
+  else {
+    chrome.tabs.executeScript({ file });
+  }
+}
+
 actionApi.onClicked.addListener( tab => {
   if (!tab.id)
     return;
@@ -53,9 +65,7 @@ actionApi.onClicked.addListener( tab => {
   }
   chrome.tabs.sendMessage(tabId, {id: 'clickIcon'}, data => {
     if (chrome.runtime.lastError) {
-      chrome.tabs.executeScript({ file: 'content.js' }, () => {
-        chrome.runtime.lastError && offIcon(tabId);
-      });
+      executeScript(tabId, 'content.js');
     }
     else {
       const { mode } = data || {};

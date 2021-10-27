@@ -12,6 +12,7 @@ const outDir = 'dist/' + (process.env.TARGET_BROWSER || 'chrome');
 
 const manifestSpecData = isChrome? {
   "manifest_version": 3,
+  "permissions": manifestData["permissions"].concat("scripting"),
   "background": {
     "service_worker": "background.js"
   },
@@ -19,8 +20,7 @@ const manifestSpecData = isChrome? {
   "action": manifestData["browser_action"],
   "web_accessible_resources": [{
     "resources": manifestData["web_accessible_resources"],
-    "matches": [],
-    "extension_ids": []
+    "matches": ["<all_urls>"]
   }]
 } : {};
 
